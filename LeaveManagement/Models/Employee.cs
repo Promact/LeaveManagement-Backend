@@ -11,7 +11,7 @@ namespace LeaveManagement.Models
 
         public string Name { get; set; }
 
-        public DateTime DateOfBearth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         public DateTime DateOfJoining { get; set; }
 
