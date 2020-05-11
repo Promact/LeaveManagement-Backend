@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace LeaveManagement.Models
 {
-    public class EmployeeLeaveMapping
+    public class EmployeeLeaveApplication
     {
         public int Id { get; set; }
 
         public int EmployeeId { get; set; }
 
-        public int LeaveId { get; set; }
+        public int LeaveTypeId { get; set; }
 
         public DateTime LeaveStartDate { get; set; }
 
@@ -24,7 +24,7 @@ namespace LeaveManagement.Models
         [ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }
 
-        [ForeignKey("LeaveId")]
-        public virtual Leave Leave { get; set; }
+        [ForeignKey("LeaveTypeId")]
+        public virtual LeaveType LeaveType { get; set; }
     }
 }
