@@ -17,6 +17,6 @@ namespace LeaveManagement.Models
 
         public DbSet<LeaveType> LeaveType { get; set; }
 
-        public DbSet<EmployeeLeaveApplication> EmployeeLeaveApplication { get; set; }
+        public DbSet<LeaveApplication> LeaveApplication { get; set; }
     }
 }

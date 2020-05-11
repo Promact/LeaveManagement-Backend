@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Models;
+using AutoMapper;
+using LeaveManagement.DTOs;
 
 namespace LeaveManagement.Controllers
 {
@@ -15,43 +17,53 @@ namespace LeaveManagement.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly LeaveManagementDbContext _context;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(LeaveManagementDbContext context)
+        public EmployeeController(LeaveManagementDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/Employees
+        // GET: api/Employee
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetEmployee()
         {
-            return await _context.Employee.ToListAsync();
+            var dbEmployees = await _context.Employee.ToListAsync();
+
+            var employeeDTOs = _mapper.Map<List<EmployeeDTO>>(dbEmployees);
+
+            return employeeDTOs;
         }
 
-        // GET: api/Employees/5
+        // GET: api/Employee/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public async Task<ActionResult<EmployeeDTO>> GetEmployee(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
+            var dbEmployee = await _context.Employee.FindAsync(id);
 
-            if (employee == null)
+            if (dbEmployee == null)
             {
                 return NotFound();
             }
 
-            return employee;
+            var employeeDTO = _mapper.Map<EmployeeDTO>(dbEmployee);
+
+            return employeeDTO;
         }
 
-        // PUT: api/Employees/5
+        // PUT: api/Employee/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+        public async Task<IActionResult> PutEmployee(int id, EmployeeDTO employeeDTO)
         {
-            if (id != employee.Id)
+            if (id != employeeDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
+            var dbEmployee = _mapper.Map<Employee>(employeeDTO);
+
+            _context.Entry(dbEmployee).State = EntityState.Modified;
 
             try
             {
@@ -72,19 +84,24 @@ namespace LeaveManagement.Controllers
             return NoContent();
         }
 
-        // POST: api/Employees
+        // POST: api/Employee
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<EmployeeDTO>> PostEmployee(EmployeeDTO employeeDTO)
         {
-            _context.Employee.Add(employee);
+            var dbEmployee = _mapper.Map<Employee>(employeeDTO);
+
+            _context.Employee.Add(dbEmployee);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
+            employeeDTO.Id = dbEmployee.Id;
+
+            return CreatedAtAction("GetEmployee", new { id = employeeDTO.Id }, employeeDTO);
         }
 
-        // DELETE: api/Employees/5
+        // DELETE: api/Employee/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        public async Task<ActionResult<EmployeeDTO>> DeleteEmployee(int id)
         {
             var employee = await _context.Employee.FindAsync(id);
             if (employee == null)
@@ -95,7 +112,9 @@ namespace LeaveManagement.Controllers
             _context.Employee.Remove(employee);
             await _context.SaveChangesAsync();
 
-            return employee;
+            var employeeDTO = _mapper.Map<EmployeeDTO>(employee);
+
+            return employeeDTO;
         }
 
         private bool EmployeeExists(int id)

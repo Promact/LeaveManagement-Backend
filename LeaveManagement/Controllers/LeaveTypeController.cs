@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Models;
+using AutoMapper;
+using LeaveManagement.DTOs;
 
 namespace LeaveManagement.Controllers
 {
@@ -15,43 +17,53 @@ namespace LeaveManagement.Controllers
     public class LeaveTypeController : ControllerBase
     {
         private readonly LeaveManagementDbContext _context;
+        private readonly IMapper _mapper;
 
-        public LeaveTypeController(LeaveManagementDbContext context)
+        public LeaveTypeController(LeaveManagementDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/LeaveTypes
+        // GET: api/LeaveType
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveType>>> GetLeaveType()
+        public async Task<ActionResult<IEnumerable<LeaveTypeDTO>>> GetLeaveType()
         {
-            return await _context.LeaveType.ToListAsync();
+            var dbLeaveTypes = await _context.LeaveType.ToListAsync();
+
+            var leaveTypeDTOs = _mapper.Map<List<LeaveTypeDTO>>(dbLeaveTypes);
+
+            return leaveTypeDTOs;
         }
 
-        // GET: api/LeaveTypes/5
+        // GET: api/LeaveType/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<LeaveType>> GetLeaveType(int id)
+        public async Task<ActionResult<LeaveTypeDTO>> GetLeaveType(int id)
         {
-            var leaveType = await _context.LeaveType.FindAsync(id);
+            var dbLeaveType = await _context.LeaveType.FindAsync(id);
 
-            if (leaveType == null)
+            if (dbLeaveType == null)
             {
                 return NotFound();
             }
 
-            return leaveType;
+            var leaveTypeDTO = _mapper.Map<LeaveTypeDTO>(dbLeaveType);
+
+            return leaveTypeDTO;
         }
 
-        // PUT: api/LeaveTypes/5
+        // PUT: api/LeaveType/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLeaveType(int id, LeaveType leaveType)
+        public async Task<IActionResult> PutLeaveType(int id, LeaveTypeDTO leaveTypeDTO)
         {
-            if (id != leaveType.Id)
+            if (id != leaveTypeDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(leaveType).State = EntityState.Modified;
+            var dbLeaveType = _mapper.Map<LeaveType>(leaveTypeDTO);
+
+            _context.Entry(dbLeaveType).State = EntityState.Modified;
 
             try
             {
@@ -72,30 +84,36 @@ namespace LeaveManagement.Controllers
             return NoContent();
         }
 
-        // POST: api/LeaveTypes
+        // POST: api/LeaveType
         [HttpPost]
-        public async Task<ActionResult<LeaveType>> PostLeaveType(LeaveType leaveType)
+        public async Task<ActionResult<LeaveTypeDTO>> PostLeaveType(LeaveTypeDTO leaveTypeDTO)
         {
-            _context.LeaveType.Add(leaveType);
+            var dbLeaveType = _mapper.Map<LeaveType>(leaveTypeDTO);
+
+            _context.LeaveType.Add(dbLeaveType);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLeaveType", new { id = leaveType.Id }, leaveType);
+            leaveTypeDTO.Id = dbLeaveType.Id;
+
+            return CreatedAtAction("GetLeaveType", new { id = leaveTypeDTO.Id }, leaveTypeDTO);
         }
 
-        // DELETE: api/LeaveTypes/5
+        // DELETE: api/LeaveType/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<LeaveType>> DeleteLeaveType(int id)
+        public async Task<ActionResult<LeaveTypeDTO>> DeleteLeaveType(int id)
         {
-            var leaveType = await _context.LeaveType.FindAsync(id);
-            if (leaveType == null)
+            var dbLeaveType = await _context.LeaveType.FindAsync(id);
+            if (dbLeaveType == null)
             {
                 return NotFound();
             }
 
-            _context.LeaveType.Remove(leaveType);
+            _context.LeaveType.Remove(dbLeaveType);
             await _context.SaveChangesAsync();
 
-            return leaveType;
+            var leaveTypeDTO = _mapper.Map<LeaveTypeDTO>(dbLeaveType);
+
+            return leaveTypeDTO;
         }
 
         private bool LeaveTypeExists(int id)

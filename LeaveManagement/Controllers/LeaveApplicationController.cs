@@ -6,100 +6,79 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LeaveManagement.Models;
+using AutoMapper;
+using LeaveManagement.DTOs;
 
 namespace LeaveManagement.Controllers
 {
+    //TODO: Add authentication to specific methods
+    //List method: Admin should get all leaves, employee should get only his/her leave
+    //Post: Only employee can apply his own leave
+    //Put: Only admin can change status of leave application
     [Route("api/[controller]")]
     [ApiController]
     public class LeaveApplicationController : ControllerBase
     {
         private readonly LeaveManagementDbContext _context;
+        private readonly IMapper _mapper;
 
-        public LeaveApplicationController(LeaveManagementDbContext context)
+        public LeaveApplicationController(LeaveManagementDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/EmployeeLeaveApplications
+        // GET: api/LeaveApplication
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmployeeLeaveApplication>>> GetEmployeeLeaveApplication()
+        public async Task<ActionResult<IEnumerable<LeaveApplicationDTO>>> LeaveApplication()
         {
-            return await _context.EmployeeLeaveApplication.ToListAsync();
+            var dbLeaveApplications = await _context.LeaveApplication.ToListAsync();
+
+            var leaveApplicationDTOs = _mapper.Map<List<LeaveApplicationDTO>>(dbLeaveApplications);
+
+            return leaveApplicationDTOs;
         }
 
-        // GET: api/EmployeeLeaveApplications/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<EmployeeLeaveApplication>> GetEmployeeLeaveApplication(int id)
-        {
-            var employeeLeaveApplication = await _context.EmployeeLeaveApplication.FindAsync(id);
-
-            if (employeeLeaveApplication == null)
-            {
-                return NotFound();
-            }
-
-            return employeeLeaveApplication;
-        }
-
-        // PUT: api/EmployeeLeaveApplications/5
+        // PUT: api/LeaveApplication/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployeeLeaveApplication(int id, EmployeeLeaveApplication employeeLeaveApplication)
+        public async Task<IActionResult> PutLeaveApplication(int id, LeaveApplicationDTO leaveApplicationDTO)
         {
-            if (id != employeeLeaveApplication.Id)
+            if (id != leaveApplicationDTO.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(employeeLeaveApplication).State = EntityState.Modified;
+            var dbLeaveApplication = _context.LeaveApplication.FirstOrDefault(x => x.Id == leaveApplicationDTO.Id);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeLeaveApplicationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/EmployeeLeaveApplications
-        [HttpPost]
-        public async Task<ActionResult<EmployeeLeaveApplication>> PostEmployeeLeaveApplication(EmployeeLeaveApplication employeeLeaveApplication)
-        {
-            _context.EmployeeLeaveApplication.Add(employeeLeaveApplication);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEmployeeLeaveApplication", new { id = employeeLeaveApplication.Id }, employeeLeaveApplication);
-        }
-
-        // DELETE: api/EmployeeLeaveApplications/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<EmployeeLeaveApplication>> DeleteEmployeeLeaveApplication(int id)
-        {
-            var employeeLeaveApplication = await _context.EmployeeLeaveApplication.FindAsync(id);
-            if (employeeLeaveApplication == null)
+            if (dbLeaveApplication == null)
             {
                 return NotFound();
             }
 
-            _context.EmployeeLeaveApplication.Remove(employeeLeaveApplication);
+            dbLeaveApplication.LeaveStatus = leaveApplicationDTO.LeaveStatus;
+
             await _context.SaveChangesAsync();
 
-            return employeeLeaveApplication;
+            return NoContent();
         }
 
-        private bool EmployeeLeaveApplicationExists(int id)
+        // POST: api/LeaveApplication
+        [HttpPost]
+        public async Task<ActionResult<LeaveApplication>> PostLeaveApplication(LeaveApplicationDTO leaveApplicationDTO)
         {
-            return _context.EmployeeLeaveApplication.Any(e => e.Id == id);
+            var dbLeaveApplication = _mapper.Map<LeaveApplication>(leaveApplicationDTO);
+
+            _context.LeaveApplication.Add(dbLeaveApplication);
+            await _context.SaveChangesAsync();
+
+            leaveApplicationDTO.Id = dbLeaveApplication.Id;
+
+            return CreatedAtAction("GetLeaveApplication", new { id = leaveApplicationDTO.Id }, leaveApplicationDTO);
+        }
+
+        private bool LeaveApplicationExists(int id)
+        {
+            return _context.LeaveApplication.Any(e => e.Id == id);
         }
     }
 }
