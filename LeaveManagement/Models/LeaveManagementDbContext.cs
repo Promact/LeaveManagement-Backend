@@ -1,0 +1,22 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace LeaveManagement.Models
+{
+    public class LeaveManagementDbContext : DbContext
+    {
+        public LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext> options) : base(options)
+        {
+
+        }
+
+        public DbSet<Employee> Employee { get; set; }
+
+        public DbSet<Leave> Leave { get; set; }
+
+        public DbSet<EmployeeLeaveMapping> EmployeeLeaveMapping { get; set; }
+    }
+}
