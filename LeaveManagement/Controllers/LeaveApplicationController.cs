@@ -75,10 +75,5 @@ namespace LeaveManagement.Controllers
 
             return CreatedAtAction("GetLeaveApplication", new { id = leaveApplicationDTO.Id }, leaveApplicationDTO);
         }
-
-        private bool LeaveApplicationExists(int id)
-        {
-            return _context.LeaveApplication.Any(e => e.Id == id);
-        }
     }
 }
