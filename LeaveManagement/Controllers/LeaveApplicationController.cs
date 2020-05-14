@@ -32,7 +32,7 @@ namespace LeaveManagement.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveApplicationDTO>>> LeaveApplication()
         {
-            var dbLeaveApplications = await _context.LeaveApplication.ToListAsync();
+            var dbLeaveApplications = await _context.LeaveApplication.Include("Employee").Include("LeaveType").ToListAsync();
 
             var leaveApplicationDTOs = _mapper.Map<List<LeaveApplicationDTO>>(dbLeaveApplications);
 
@@ -66,14 +66,24 @@ namespace LeaveManagement.Controllers
         [HttpPost]
         public async Task<ActionResult<LeaveApplication>> PostLeaveApplication(LeaveApplicationDTO leaveApplicationDTO)
         {
-            var dbLeaveApplication = _mapper.Map<LeaveApplication>(leaveApplicationDTO);
+            //TODO: Assign current user id here
+
+
+
+            var dbLeaveApplication = new LeaveApplication()
+            {
+                EmployeeId = 12,
+                LeaveStartDate = leaveApplicationDTO.LeaveStartDate,
+                LeaveEndDate = leaveApplicationDTO.LeaveEndDate,
+                LeaveTypeId = leaveApplicationDTO.LeaveTypeId
+            };
 
             _context.LeaveApplication.Add(dbLeaveApplication);
             await _context.SaveChangesAsync();
 
             leaveApplicationDTO.Id = dbLeaveApplication.Id;
 
-            return CreatedAtAction("GetLeaveApplication", new { id = leaveApplicationDTO.Id }, leaveApplicationDTO);
+            return CreatedAtAction("LeaveApplication", new { id = leaveApplicationDTO.Id }, leaveApplicationDTO);
         }
     }
 }

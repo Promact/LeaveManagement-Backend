@@ -14,9 +14,9 @@ namespace LeaveManagement.DTOs
 
         public string EmployeeName { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime LeaveStartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime LeaveEndDate { get; set; }
 
         public int LeaveTypeId { get; set; }
 
