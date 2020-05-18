@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using LeaveManagement.Repository.Repository;
 using LeaveManagement.Repository.DTOs;
-using LeaveManagement.DomainModel.Models;
+using LeaveManagement.Repository.Services;
 
 namespace LeaveManagement.Core.Controllers
 {
@@ -14,90 +11,81 @@ namespace LeaveManagement.Core.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly IEntityRepository<Employee,EmployeeDTO> _entityRepository;
+        private readonly IEmployeeService _employeeService;
         
 
-        public EmployeeController(IEntityRepository<Employee,EmployeeDTO> entityRepository)
+        public EmployeeController(IEmployeeService employeeService)
         {
-            _entityRepository = entityRepository;
+            _employeeService = employeeService;
         }
 
         // GET: api/Employee
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> Get()
         {
             
-            IEnumerable<EmployeeDTO> employeeDTOs = await _entityRepository.GetEntityAsync();
-
+            IEnumerable<EmployeeDTO> employeeDTOs = await _employeeService.GetAllEmployees();
             return Ok(employeeDTOs);
         }
 
         // GET: api/Employee/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EmployeeDTO>> GetEmployee(int id)
+        public async Task<ActionResult<EmployeeDTO>> Get(int id)
         {
-            try
-            {
-                var employeeDTO = await _entityRepository.GetEntityAsync(id);
-                return employeeDTO;
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound();
-            }
-            
+            EmployeeDTO employeeDTO = await _employeeService.GetEmployeeById(id);
+            return employeeDTO;
         }
 
-        // PUT: api/Employee/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, EmployeeDTO employeeDTO)
-        {
-            if (id != employeeDTO.Id)
-            {
-                return BadRequest();
-            }
+        //// PUT: api/Employee/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> Update(int id, EmployeeDTO employeeDTO)
+        //{
+        //    if (id != employeeDTO.Id)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            try
-            {
-                await _entityRepository.PutEntityAsync(id, employeeDTO);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            catch (MissingFieldException)
-            {
-                return NotFound();
-            }
+        //    try
+        //    {
+        //        await _entityRepository.PutEntityAsync(id, employeeDTO);
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        throw;
+        //    }
+        //    catch (MissingFieldException)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
-        // POST: api/Employee
-        [HttpPost]
-        public async Task<ActionResult<EmployeeDTO>> PostEmployee(EmployeeDTO employeeDTO)
-        {
-            
-            employeeDTO = await _entityRepository.PostEntityAsync(employeeDTO);
+        //// POST: api/Employee
+        //[HttpPost]
+        //public async Task<ActionResult<EmployeeDTO>> Add(EmployeeDTO employeeDTO)
+        //{
 
-            return CreatedAtAction("GetEmployee", new { id = employeeDTO.Id }, employeeDTO);
-        }
+        //    employeeDTO = await _entityRepository.PostEntityAsync(employeeDTO);
 
-        // DELETE: api/Employee/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<EmployeeDTO>> DeleteEmployee(int id)
-        {
-            try
-            {
-                var employeeDTO = await _entityRepository.DeleteEntityAsync(id);
-                return employeeDTO;
-            }
-            catch (NullReferenceException)
-            {
-                return NoContent();
-            }
-        }
+        //    return CreatedAtAction("GetEmployee", new { id = employeeDTO.Id }, employeeDTO);
+        //}
 
-        
+        //// DELETE: api/Employee/5
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult<EmployeeDTO>> Delete(int id)
+        //{
+        //    try
+        //    {
+        //        var employeeDTO = await _entityRepository.DeleteEntityAsync(id);
+        //        return employeeDTO;
+        //    }
+        //    catch (NullReferenceException)
+        //    {
+        //        return NoContent();
+        //    }
+        //}
+
+
     }
 }

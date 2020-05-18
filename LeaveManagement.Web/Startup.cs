@@ -1,6 +1,6 @@
 using AutoMapper;
+using LeaveManagement.DomainModel.DataRepository;
 using LeaveManagement.DomainModel.Models;
-using LeaveManagement.Repository.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -40,9 +40,9 @@ namespace LeaveManagement.Web
                                   });
             });
 
-            services.AddScoped(typeof(IEntityRepository<,>), typeof(EntityRepository<,>));
-
             services.AddOpenApiDocument();
+
+            RegisterDepencies(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +66,15 @@ namespace LeaveManagement.Web
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
+        }
+
+        /// <summary>
+        /// Register DI components here
+        /// </summary>
+        /// <param name="services">Service Collection for DI</param>
+        private void RegisterDepencies(IServiceCollection services) {
+
+            services.AddScoped<IDataRepository, DataRepository>();
         }
     }
 }
