@@ -47,7 +47,7 @@ namespace LeaveManagement.Repository.Repository
         {
             if (string.IsNullOrEmpty(propertyToUpdate))
             {
-                var entity = _mapper.Map<TDto>(entityDto);
+                var entity = _mapper.Map<TEntity>(entityDto);
                 _context.Entry(entity).State = EntityState.Modified;
             }
             else

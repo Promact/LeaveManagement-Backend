@@ -41,6 +41,8 @@ namespace LeaveManagement.Web
             });
 
             services.AddScoped(typeof(IEntityRepository<,>), typeof(EntityRepository<,>));
+
+            services.AddOpenApiDocument();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +63,9 @@ namespace LeaveManagement.Web
             {
                 endpoints.MapControllers();
             });
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
         }
     }
 }
