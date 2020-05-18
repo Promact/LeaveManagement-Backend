@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaveManagement.Repository"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaveManagement.Core", "LeaveManagement.Core\LeaveManagement.Core.csproj", "{DFBF64DC-A67A-4D4B-B62E-6FA6B2FC2C36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaveManagement.Test", "LeaveManagement.Test\LeaveManagement.Test.csproj", "{2BD6C40B-E098-40FB-8DDB-1B782A0EE108}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{DFBF64DC-A67A-4D4B-B62E-6FA6B2FC2C36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFBF64DC-A67A-4D4B-B62E-6FA6B2FC2C36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFBF64DC-A67A-4D4B-B62E-6FA6B2FC2C36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BD6C40B-E098-40FB-8DDB-1B782A0EE108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BD6C40B-E098-40FB-8DDB-1B782A0EE108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BD6C40B-E098-40FB-8DDB-1B782A0EE108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BD6C40B-E098-40FB-8DDB-1B782A0EE108}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
