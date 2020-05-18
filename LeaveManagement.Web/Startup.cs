@@ -1,6 +1,7 @@
 using AutoMapper;
 using LeaveManagement.DomainModel.DataRepository;
 using LeaveManagement.DomainModel.Models;
+using LeaveManagement.Repository.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,7 @@ namespace LeaveManagement.Web
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
+                                      //Well played Rushi, good way to teach people whitelisting :rolls_eyes:
                                       builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                                   });
             });
@@ -46,7 +48,7 @@ namespace LeaveManagement.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, LeaveManagementDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -66,6 +68,9 @@ namespace LeaveManagement.Web
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
+
+            //Update database on project startup
+            context.Database.Migrate();
         }
 
         /// <summary>
@@ -75,6 +80,7 @@ namespace LeaveManagement.Web
         private void RegisterDepencies(IServiceCollection services) {
 
             services.AddScoped<IDataRepository, DataRepository>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
         }
     }
 }
